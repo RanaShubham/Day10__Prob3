@@ -1,83 +1,183 @@
 #!/bin/bash -x
 
-echo "Welcome to flip coin combination program"
+echo "Welcome to flip Tcoin combination program"
 
-read -p "How many times do you want to flip each of three coins: " times
+read -p "Enter times you want to flip for each singlet doublet and triplet combinations: " times
 
-declare -a storeDict
-declare -A coin
+declare -A Tcoin
+declare -A Dcoin
+declare -A Scoin
+
+function facePercent ()
+{
+        local faceTimes=$1
+        local total=$2
+
+        per=`awk " BEGIN {print ($faceTimes/$total)*100 }"`
+        echo "$per"
+}
+
+echo "_____________________________________________________________________________________"
 counter=0
 
-coin["HHH"]=0
-coin["HTH"]=0
-coin["THH"]=0
-coin["TTH"]=0
-coin["TTT"]=0
-coin["THT"]=0
-coin["HTT"]=0
-coin["HHT"]=0
+#Tails is 1 and heads is 2
+Scoin["T"]=0
+Scoin["H"]=0
 
-
-
-#1 is tails and 2 is heads
 while [[ $counter != $times ]]
 do
-	face1=$((1+RANDOM%2))
-	face2=$((1+RANDOM%2))
-	face3=$((1+RANDOM%2))
-
-	if [ $face1 -eq 1 -a $face2 -eq 1 -a $face3 = 1 ]
+	sFace=$((1+RANDOM%2))
+	if [ $sFace = 1 ]
 	then
-		((coin["TTT"]++))
+		((Scoin["T"]++))
+	else
+		((Scoin["H"]++))
+	fi
 
-	elif [ $face1 -eq 2 -a $face2 -eq 1 -a $face3 = 2 ]
+	((counter++))
+done
+
+for key in ${!Scoin[@]}
+do
+        ScoinStat["$key"]="${Scoin["$key"]} times $(facePercent ${Scoin["$key"]} $times)%"
+
+        echo "$key came ${ScoinStat["$key"]}"
+done
+
+if [[ ${Scoin["T"]} -ge ${Scoin["H"]} ]]
+then
+	max=T
+else
+	max=H
+fi
+
+echo "$max won for singlets"
+
+echo "______________________________________________________________________________________"
+
+counter=0
+
+Dcoin["TT"]=0
+Dcoin["HH"]=0
+Dcoin["HT"]=0
+Dcoin["TH"]=0
+
+while [[ $counter != $times ]]
+do
+	dFace1=$((1+RANDOM%2))
+	dFace2=$((1+RANDOM%2))
+	
+	if [ $dFace1 = 1 -a $dFace2 = 1 ]
 	then
-		((coin["HTH"]++))
+		((Dcoin["TT"]++))
 
-	elif [ $face1 -eq 1 -a $face2 -eq 2 -a $face3 -eq 2 ]
+	elif [ $dFace1 = 2 -a $dFace2 = 2 ]
 	then
-		((coin["THH"]++))
-
-	elif [ $face1 -eq 1 -a $face2 -eq 1 -a $face3 -eq 2 ]
+		((Dcoin["HH"]++))
+	elif [ $dFace1 = 2 -a $dFace2 = 1 ]
 	then
-		((coin["TTH"]++))
+		((Dcoin["HT"]++))
 
-	elif [ $face1 -eq 2 -a $face2 -eq 2 -a $face3 = 2 ]
-        then
-                ((coin["HHH"]++))
+	elif [ $dFace1 = 1 -a $dFace2 = 2 ]
+	then
+		((Dcoin["TH"]++))
+	fi
 
-	elif [ $face1 -eq 1 -a $face2 -eq 2 -a $face3 = 1 ]
-        then
-                ((coin["THT"]++))
+	((counter++))
+done
+for key in ${!Dcoin[@]}
+do
+        DcoinStat["$key"]="${Dcoin["$key"]} times $(facePercent ${Dcoin["$key"]} $times)%"
 
-	elif [ $face1 -eq 2 -a $face2 -eq 1 -a $face3 = 1 ]
-        then
-                ((coin["HTT"]++))
+        echo "$key came ${DcoinStat["$key"]}"
+done
 
-	elif [ $face1 -eq 2 -a $face2 -eq 2 -a $face3 = 1 ]
+max="HH"
+for key in ${!Dcoin[@]}
+do
+        if [[ ${Dcoin["$key"]} -ge ${Dcoin["$max"]} ]]
         then
-                ((coin["HHT"]++))
+                max=$key
+        fi
+done
+
+echo "$max combination won for doublets"
+
+
+echo "______________________________________________________________________________________"
+
+counter=0
+
+Tcoin["HHH"]=0
+Tcoin["HTH"]=0
+Tcoin["THH"]=0
+Tcoin["TTH"]=0
+Tcoin["TTT"]=0
+Tcoin["THT"]=0
+Tcoin["HTT"]=0
+Tcoin["HHT"]=0
+
+
+while [[ $counter != $times ]]
+do
+	tFace1=$((1+RANDOM%2))
+	tFace2=$((1+RANDOM%2))
+	tFace3=$((1+RANDOM%2))
+
+	if [ $tFace1 -eq 1 -a $tFace2 -eq 1 -a $tFace3 = 1 ]
+	then
+		((Tcoin["TTT"]++))
+
+	elif [ $tFace1 -eq 2 -a $tFace2 -eq 1 -a $tFace3 = 2 ]
+	then
+		((Tcoin["HTH"]++))
+
+	elif [ $tFace1 -eq 1 -a $tFace2 -eq 2 -a $tFace3 -eq 2 ]
+	then
+		((Tcoin["THH"]++))
+
+	elif [ $tFace1 -eq 1 -a $tFace2 -eq 1 -a $tFace3 -eq 2 ]
+	then
+		((Tcoin["TTH"]++))
+
+	elif [ $tFace1 -eq 2 -a $tFace2 -eq 2 -a $tFace3 = 2 ]
+        then
+                ((Tcoin["HHH"]++))
+
+	elif [ $tFace1 -eq 1 -a $tFace2 -eq 2 -a $tFace3 = 1 ]
+        then
+                ((Tcoin["THT"]++))
+
+	elif [ $tFace1 -eq 2 -a $tFace2 -eq 1 -a $tFace3 = 1 ]
+        then
+                ((Tcoin["HTT"]++))
+
+	elif [ $tFace1 -eq 2 -a $tFace2 -eq 2 -a $tFace3 = 1 ]
+        then
+                ((Tcoin["HHT"]++))
 	fi
 
 	((counter++))
 done
 
 
-function facePercent ()
-{
-	local faceTimes=$1
-	local total=$2
-
-	per=`awk " BEGIN {print ($faceTimes/$total)*100 }"`
-	echo "$per"
-}
-
-
 #Using subshell to run the function and show the number of times each combination showed up
-for key in ${!coin[@]}
+for key in ${!Tcoin[@]}
 do
-	coinStat["$key"]="${coin["$key"]} times $(facePercent ${coin["$key"]} $times)%"
+	TcoinStat["$key"]="${Tcoin["$key"]} times $(facePercent ${Tcoin["$key"]} $times)%"
 
-	echo "$key came ${coinStat["$key"]}"
+	echo "$key came ${TcoinStat["$key"]}"
 done
 
+max="HHH"
+for key in ${!Tcoin[@]}
+do
+        if [[ ${Tcoin["$key"]} -ge ${Tcoin["$max"]} ]]
+        then
+                max=$key
+        fi
+done
+
+echo "$max combination won for triplets"
+
+echo "_____________________________________________________________________________________"
