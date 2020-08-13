@@ -2,37 +2,61 @@
 
 echo "Welcome to flip coin combination program"
 
-read -p "How many times do you want to flip each of two coins: " times
+read -p "How many times do you want to flip each of three coins: " times
 
+declare -a storeDict
 declare -A coin
 counter=0
 
-coin["HH"]=0
-coin["HT"]=0
-coin["TH"]=0
-coin["TT"]=0
+coin["HHH"]=0
+coin["HTH"]=0
+coin["THH"]=0
+coin["TTH"]=0
+coin["TTT"]=0
+coin["THT"]=0
+coin["HTT"]=0
+coin["HHT"]=0
+
+
 
 #1 is tails and 2 is heads
 while [[ $counter != $times ]]
 do
 	face1=$((1+RANDOM%2))
 	face2=$((1+RANDOM%2))
+	face3=$((1+RANDOM%2))
 
-	if [ $face1 -eq 1 -a $face2 -eq 1 ]
+	if [ $face1 -eq 1 -a $face2 -eq 1 -a $face3 = 1 ]
 	then
-		((coin["TT"]++))
+		((coin["TTT"]++))
 
-	elif [ $face1 -eq 1 -a $face2 -eq 2 ]
+	elif [ $face1 -eq 2 -a $face2 -eq 1 -a $face3 = 2 ]
 	then
-		((coin["TH"]++))
+		((coin["HTH"]++))
 
-	elif [ $face1 -eq 2 -a $face2 -eq 1 ]
+	elif [ $face1 -eq 1 -a $face2 -eq 2 -a $face3 -eq 2 ]
 	then
-		((coin["HT"]++))
+		((coin["THH"]++))
 
-	elif [ $face1 -eq 2 -a $face2 -eq 2 ]
+	elif [ $face1 -eq 1 -a $face2 -eq 1 -a $face3 -eq 2 ]
 	then
-		((coin["HH"]++))
+		((coin["TTH"]++))
+
+	elif [ $face1 -eq 2 -a $face2 -eq 2 -a $face3 = 2 ]
+        then
+                ((coin["HHH"]++))
+
+	elif [ $face1 -eq 1 -a $face2 -eq 2 -a $face3 = 1 ]
+        then
+                ((coin["THT"]++))
+
+	elif [ $face1 -eq 2 -a $face2 -eq 1 -a $face3 = 1 ]
+        then
+                ((coin["HTT"]++))
+
+	elif [ $face1 -eq 2 -a $face2 -eq 2 -a $face3 = 1 ]
+        then
+                ((coin["HHT"]++))
 	fi
 
 	((counter++))
@@ -49,12 +73,11 @@ function facePercent ()
 }
 
 
-echo "${coin[@]}"
-
-#Using subshell to run the function
+#Using subshell to run the function and show the number of times each combination showed up
 for key in ${!coin[@]}
 do
-	coin["$key"]="${coin["$key"]} times $(facePercent ${coin["$key"]} $times)%"
+	coinStat["$key"]="${coin["$key"]} times $(facePercent ${coin["$key"]} $times)%"
 
-	echo "$key showed up ${coin["$key"]}"
+	echo "$key came ${coinStat["$key"]}"
 done
+
