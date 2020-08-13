@@ -2,29 +2,42 @@
 
 echo "Welcome to flip coin combination program"
 
-read -p "How many times do you want to flip coin: " times
+read -p "How many times do you want to flip each of two coins: " times
 
 declare -A coin
 counter=0
-heads=0
-tails=0
 
+coin["HH"]=0
+coin["HT"]=0
+coin["TH"]=0
+coin["TT"]=0
+
+#1 is tails and 2 is heads
 while [[ $counter != $times ]]
 do
-	face=$((RANDOM%2))
+	face1=$((1+RANDOM%2))
+	face2=$((1+RANDOM%2))
 
-	if [[ $face = 1 ]]
+	if [ $face1 -eq 1 -a $face2 -eq 1 ]
 	then
-		((heads++))
-	else
-		((tails++))
+		((coin["TT"]++))
+
+	elif [ $face1 -eq 1 -a $face2 -eq 2 ]
+	then
+		((coin["TH"]++))
+
+	elif [ $face1 -eq 2 -a $face2 -eq 1 ]
+	then
+		((coin["HT"]++))
+
+	elif [ $face1 -eq 2 -a $face2 -eq 2 ]
+	then
+		((coin["HH"]++))
 	fi
 
 	((counter++))
 done
 
-coin[H]=$heads
-coin[T]=$tail
 
 function facePercent ()
 {
@@ -35,6 +48,13 @@ function facePercent ()
 	echo "$per"
 }
 
+
+echo "${coin[@]}"
+
 #Using subshell to run the function
-echo "heads showed up $(facePercent $heads $times)% "
-echo "tails showed up $(facePercent $tails $times)% "
+for key in ${!coin[@]}
+do
+	coin["$key"]="${coin["$key"]} times $(facePercent ${coin["$key"]} $times)%"
+
+	echo "$key showed up ${coin["$key"]}"
+done
